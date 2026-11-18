@@ -1,0 +1,229 @@
+:root {
+    /* 1단계: 기본 색상 토큰 */
+    --color-brown-500: #9b6731;
+    --color-brown-600: #96622e;
+    --color-brown-700: #935f2b;
+    --color-navy-900: #102a3a;
+
+    --color-gray-50: #f4f6f9;
+    --color-gray-500: #808385;
+    --color-gray-800: #3a3c3d;
+    --color-white: #ffffff;
+
+    /* 2단계: 의미 기반 토큰 (Semantic Tokens) */
+    --color-page-bg: var(--color-gray-50);
+    --color-clock-front: var(--color-brown-500);
+    --color-clock-side: var(--color-brown-600);
+    --color-clock-top: var(--color-brown-700);
+    --color-clock-border: var(--color-navy-900);
+
+    --color-screen-bg: var(--color-gray-500);
+    --color-segment-on: var(--color-gray-800);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Malgun Gothic', sans-serif;
+    background-color: var(--color-page-bg);
+    margin: 0;
+    padding: 2.5rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+}
+
+/* 스크린 리더용 시각적 숨김 클래스 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.alarm-clock {
+    position: relative;
+    width: 100%;
+    max-width: 54rem;
+    aspect-ratio: 900 / 430;
+}
+
+.alarm-clock__frame {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* 전면 조작부 + 액정 화면 배치 */
+.alarm-clock__front {
+    position: absolute;
+    left: 2.0%;
+    top: 30.2%;
+    width: 59.8%;
+    height: 60.5%;
+    padding: 2.2% 2.8%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 상단 줄: 버튼 4개 + 배터리·알람 상태창 */
+.alarm-clock__top-bar {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    height: 25%;
+    gap: 2.2%;
+}
+
+.alarm-clock__controls {
+    display: flex;
+    gap: 6%;
+    width: 55%;
+}
+
+.alarm-clock__btn {
+    flex: 1;
+    background-color: var(--color-clock-front);
+    border: 2.5px solid var(--color-clock-border);
+    color: var(--color-white);
+    font-size: clamp(0.8125rem, 2vw, 1.25rem);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* 우측 상단 상태창 (배터리 + 알람 아이콘 3개) */
+.alarm-clock__status {
+    width: 41%;
+    background-color: var(--color-screen-bg);
+    border: 2.5px solid var(--color-clock-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 3.5%;
+    color: var(--color-white);
+}
+
+.alarm-clock__battery {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+/* 가상 요소(::before, ::after)로 배터리 내부 채움과 오른쪽 꼭지 표현 */
+.alarm-clock__battery-box {
+    position: relative;
+    width: clamp(1.875rem, 4vw, 2.625rem);
+    height: clamp(0.95rem, 2vw, 1.35rem);
+    border: 2.5px solid var(--color-white);
+    border-radius: 2px;
+    margin-right: 0.25rem;
+}
+
+.alarm-clock__battery-box::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    background-color: var(--color-white);
+}
+
+.alarm-clock__battery-box::after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: 22%;
+    width: 4px;
+    height: 56%;
+    background-color: var(--color-white);
+    border-radius: 0 1px 1px 0;
+}
+
+.alarm-clock__battery-num {
+    font-size: clamp(0.8125rem, 1.8vw, 1.2rem);
+    font-weight: bold;
+}
+
+.alarm-clock__alarms {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.alarm-clock__alarm-icon {
+    width: clamp(1rem, 2.2vw, 1.45rem);
+    height: clamp(1rem, 2.2vw, 1.45rem);
+    opacity: 0.45;
+}
+
+.alarm-clock__alarm-icon--active {
+    opacity: 1;
+}
+
+/* 하단 7-세그먼트 시계 액정 화면 */
+.alarm-clock__screen {
+    height: 67%;
+    background-color: var(--color-screen-bg);
+    border: 2.5px solid var(--color-clock-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3.5% 4.5%;
+}
+
+/* [자리수 뭉침 개선] 시(HH), 콜론(:), 분(MM), 콜론(:), 초(SS) 사이 간격을 명확히 분리 */
+.alarm-clock__digits {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    gap: 2.2%;
+}
+
+/* 두 자리 숫자 묶음(시, 분, 초) 내부에서도 십의 자리와 일의 자리 사이 간격(gap: 10%) 확보 */
+.alarm-clock__digit-pair {
+    display: flex;
+    justify-content: space-between;
+    gap: 10%;
+    width: 27%;
+    height: 92%;
+}
+
+/* 모서리가 띄워진 진짜 7-세그먼트 모양 SVG */
+.alarm-clock__digit {
+    width: 45%;
+    height: 100%;
+    fill: var(--color-segment-on);
+}
+
+/* 시/분/초 구분 콜론(:) 도형 - 숫자와 겹치지 않도록 좌우 여백 확보 */
+.alarm-clock__colon {
+    width: 2.4%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0.8%;
+}
+
+.alarm-clock__colon::before,
+.alarm-clock__colon::after {
+    content: "";
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1.4;
+    background-color: var(--color-segment-on);
+    border-radius: 2px;
+}
