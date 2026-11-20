@@ -3,82 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>알람시계 화면 레이아웃</title>
-    <!-- 외부 스타일시트(css/style.css) 연결 -->
+    <title>알람시계</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="alarm-clock">
-    <h1 class="sr-only">디지털 알람시계 화면</h1>
+<main id="alarmClockRoot" class="alarm-clock">
+    <h1 class="sr-only">알람시계</h1>
 
-    <!-- 7-세그먼트 숫자 1개 모양을 <defs>에 한 번만 정의하고 <use>로 재사용 (DRY 원칙) -->
-    <svg width="0" height="0" style="position: absolute;" aria-hidden="true">
+    <!-- 3D 시계 입체 외형 및 원통형 배터리함 SVG -->
+    <svg class="alarm-clock__frame" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg">
         <defs>
-            <g id="seven-segment-8">
-                <!-- 상단 가로 막대 (a) -->
-                <polygon points="10,4 50,4 45,12 15,12" />
-                <!-- 우측 상단 세로 막대 (b) -->
-                <polygon points="53,8 53,51 45,47 45,14" />
-                <!-- 우측 하단 세로 막대 (c) -->
-                <polygon points="53,59 53,102 45,96 45,63" />
-                <!-- 하단 가로 막대 (d) -->
-                <polygon points="10,106 50,106 45,98 15,98" />
-                <!-- 좌측 하단 세로 막대 (e) -->
-                <polygon points="7,59 7,102 15,96 15,63" />
-                <!-- 좌측 상단 세로 막대 (f) -->
-                <polygon points="7,8 7,51 15,47 15,14" />
-                <!-- 중앙 가로 막대 (g) -->
-                <polygon points="12,51 48,51 51,55 48,59 12,59 9,55" />
-            </g>
+            <clipPath id="compartmentClip">
+                <polygon points="572,202 714,112 714,278 572,362" />
+            </clipPath>
         </defs>
-    </svg>
 
-    <!-- 3D 시계 입체 외형 및 우측 배터리함 덮개 -->
-    <svg class="alarm-clock__frame" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <!-- 윗면 -->
         <polygon points="18,130 260,45 730,45 556,130" fill="#935f2b" stroke="#102a3a" stroke-width="2.5" />
         <!-- 정면 몸통 -->
         <rect x="18" y="130" width="538" height="260" fill="#9b6731" stroke="#102a3a" stroke-width="2.5" />
         <!-- 우측 옆면 몸통 -->
         <polygon points="556,130 730,45 730,305 556,390" fill="#96622e" stroke="#102a3a" stroke-width="2.5" />
-        <!-- 우측 배터리함 덮개 -->
-        <polygon points="572,202 714,132 714,292 572,362" fill="#96622e" stroke="#102a3a" stroke-width="2.5" />
-        <!-- 배터리함 손잡이 홈 -->
-        <polygon points="582,250 587,248 587,315 582,317" fill="#96622e" stroke="#102a3a" stroke-width="2" />
+
+        <!-- 닫혀 있는 배터리함 덮개(배터리 0 아님) -->
+        <g id="closedDoorGroup">
+            <polygon id="batteryDoorWide" class="alarm-clock__battery-door" points="572,202 714,132 714,292 572,362" fill="#96622e" stroke="#102a3a" stroke-width="2.5">
+            </polygon>
+            <polygon id="batteryDoorLatch" class="alarm-clock__door-latch" points="582,250 590,246 590,315 582,319" fill="#96622e" stroke="#102a3a" stroke-width="2">
+            </polygon>
+        </g>
+
+        <!-- 배터리가 방전되어 건전기 교체 필요 -->
+        <g id="openDoorGroup" class="alarm-clock__open-compartment" style="display: none;">
+            <polygon points="572,202 714,112 714,278 572,362" fill="#050505" stroke="#102a3a" stroke-width="2.5" />
+
+            <g clip-path="url(#compartmentClip)">
+                <!-- 위쪽 원통형 파란 건전지 (- 극) -->
+                <g transform="translate(558, 224) rotate(-27)">
+                    <rect x="0" y="0" width="152" height="58" rx="16" ry="28" fill="#145b7d" stroke="#072230" stroke-width="2.5" />
+                    <circle cx="122" cy="29" r="14" fill="#ffffff" />
+                    <line x1="115" y1="29" x2="129" y2="29" stroke="#14597d" stroke-width="3.5" stroke-linecap="round" />
+                </g>
+
+                <!-- 아래쪽 원통형 파란 건전지 (+ 극) -->
+                <g transform="translate(558, 286) rotate(-27)">
+                    <rect x="0" y="0" width="152" height="58" rx="16" ry="28" fill="#145b7d" stroke="#072230" stroke-width="2.5" />
+                    <circle cx="122" cy="29" r="14" fill="#ffffff" />
+                    <line x1="115" y1="29" x2="129" y2="29" stroke="#14597d" stroke-width="3.5" stroke-linecap="round" />
+                    <line x1="122" y1="22" x2="122" y2="36" stroke="#14597d" stroke-width="3.5" stroke-linecap="round" />
+                </g>
+            </g>
+
+            <polygon points="572,202 714,112 714,278 572,362" fill="none" stroke="#102a3a" stroke-width="2.5" />
+            <polygon points="714,112 885,195 885,360 714,278" fill="#96622e" stroke="#102a3a" stroke-width="2.5" />
+        </g>
     </svg>
 
-    <!-- 전면 조작부 및 시계 액정 영역 -->
+    <!-- 전면 조작부 및 디스플레이 -->
     <div class="alarm-clock__front">
         <div class="alarm-clock__top-bar">
-            <!-- 조작 버튼 4개 -->
-            <section class="alarm-clock__controls" aria-label="시계 조작 버튼 영역">
-                <button type="button" class="alarm-clock__btn" aria-label="설정 (Set)">Set</button>
-                <button type="button" class="alarm-clock__btn" aria-label="위로 올리기">▲</button>
-                <button type="button" class="alarm-clock__btn" aria-label="아래로 내리기">▼</button>
-                <button type="button" class="alarm-clock__btn" aria-label="확인">◯</button>
+            <section class="alarm-clock__controls" aria-label="시계 조작 버튼">
+                <button type="button" id="btnSet" class="alarm-clock__btn" aria-label="Set 모드 선택">Set</button>
+                <button type="button" id="btnUp" class="alarm-clock__btn" aria-label="숫자 또는 알람 번호 증가">▲</button>
+                <button type="button" id="btnDown" class="alarm-clock__btn" aria-label="숫자 또는 알람 번호 감소">▼</button>
+                <button type="button" id="btnConfirm" class="alarm-clock__btn" aria-label="확인 및 다음 단위 이동">◯</button>
             </section>
 
-            <!-- 배터리 잔량 및 알람 아이콘 상태창 -->
-            <section class="alarm-clock__status" aria-label="배터리 및 알람 상태 영역">
-                <div class="alarm-clock__battery" aria-label="배터리 잔량 100퍼센트">
-                    <div class="alarm-clock__battery-box" aria-hidden="true"></div>
-                    <span class="alarm-clock__battery-num">100</span>
+            <section id="statusBox" class="alarm-clock__status" aria-label="배터리 및 알람 상태">
+                <div class="alarm-clock__battery">
+                    <svg class="alarm-clock__battery-svg" viewBox="0 0 52 26" aria-hidden="true">
+                        <rect id="batteryOutline" x="2" y="3" width="42" height="20" rx="2" fill="none" stroke="#ffffff" stroke-width="2.5" />
+                        <rect id="batteryTip" x="44" y="8" width="5" height="10" rx="1" fill="#ffffff" />
+                        <rect id="batteryFillRect" x="6" y="7" width="34" height="12" fill="#ffffff" />
+                        <polyline id="batteryBolt" points="25,2 18,13 24,13 20,24" fill="none" stroke="#1c1d1e" stroke-width="2.2" style="display: none;" />
+                    </svg>
+                    <span id="batteryNum" class="alarm-clock__battery-num">100</span>
                 </div>
 
-                <div class="alarm-clock__alarms" aria-label="알람 슬롯 3개">
-                    <svg class="alarm-clock__alarm-icon alarm-clock__alarm-icon--active" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" aria-hidden="true">
+                <div class="alarm-clock__alarms" aria-label="알람 1~3번 설정 상태">
+                    <svg class="alarm-clock__alarm-icon" data-alarm-idx="0" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="13" r="8" />
                         <polyline points="12 9 12 13 15 15" />
                         <line x1="5" y1="3" x2="2" y2="6" />
                         <line x1="19" y1="3" x2="22" y2="6" />
                     </svg>
-                    <svg class="alarm-clock__alarm-icon" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" aria-hidden="true">
+                    <svg class="alarm-clock__alarm-icon" data-alarm-idx="1" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="13" r="8" />
                         <polyline points="12 9 12 13 15 15" />
                         <line x1="5" y1="3" x2="2" y2="6" />
                         <line x1="19" y1="3" x2="22" y2="6" />
                     </svg>
-                    <svg class="alarm-clock__alarm-icon" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" aria-hidden="true">
+                    <svg class="alarm-clock__alarm-icon" data-alarm-idx="2" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="13" r="8" />
                         <polyline points="12 9 12 13 15 15" />
                         <line x1="5" y1="3" x2="2" y2="6" />
@@ -88,33 +103,34 @@
             </section>
         </div>
 
-        <!-- 하단 88:88:88 세그먼트 액정 화면 (시·분·초 두 자리씩 묶고 막대 사이 틈새 적용) -->
-        <section class="alarm-clock__screen" aria-label="시간 표시 화면">
+        <!-- 큰 디스플레이 (시/분/초) -->
+        <section id="lcdScreen" class="alarm-clock__screen" aria-label="시계 시간 표시 화면">
+            <span id="warnBadge" class="alarm-clock__warn-badge">00:00:00은 설정 불가</span>
+
             <div class="alarm-clock__digits" aria-hidden="true">
-                <!-- 시 (HH) -->
-                <div class="alarm-clock__digit-pair">
-                    <svg class="alarm-clock__digit" viewBox="0 0 60 110"><use href="#seven-segment-8" /></svg>
-                    <svg class="alarm-clock__digit" viewBox="0 0 60 110"><use href="#seven-segment-8" /></svg>
+                <div id="pairHour" class="alarm-clock__digit-pair">
+                    <svg id="digitH1" class="alarm-clock__digit" viewBox="0 0 60 110"></svg>
+                    <svg id="digitH2" class="alarm-clock__digit" viewBox="0 0 60 110"></svg>
                 </div>
 
                 <div class="alarm-clock__colon"></div>
 
-                <!-- 분 (MM) -->
-                <div class="alarm-clock__digit-pair">
-                    <svg class="alarm-clock__digit" viewBox="0 0 60 110"><use href="#seven-segment-8" /></svg>
-                    <svg class="alarm-clock__digit" viewBox="0 0 60 110"><use href="#seven-segment-8" /></svg>
+                <div id="pairMin" class="alarm-clock__digit-pair">
+                    <svg id="digitM1" class="alarm-clock__digit" viewBox="0 0 60 110"></svg>
+                    <svg id="digitM2" class="alarm-clock__digit" viewBox="0 0 60 110"></svg>
                 </div>
 
                 <div class="alarm-clock__colon"></div>
 
-                <!-- 초 (SS) -->
-                <div class="alarm-clock__digit-pair">
-                    <svg class="alarm-clock__digit" viewBox="0 0 60 110"><use href="#seven-segment-8" /></svg>
-                    <svg class="alarm-clock__digit" viewBox="0 0 60 110"><use href="#seven-segment-8" /></svg>
+                <div id="pairSec" class="alarm-clock__digit-pair">
+                    <svg id="digitS1" class="alarm-clock__digit" viewBox="0 0 60 110"></svg>
+                    <svg id="digitS2" class="alarm-clock__digit" viewBox="0 0 60 110"></svg>
                 </div>
             </div>
         </section>
     </div>
 </main>
+
+<script src="script.js"></script>
 </body>
 </html>
